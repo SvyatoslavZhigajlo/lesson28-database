@@ -29,6 +29,7 @@ public class Main {
             int selectNumb = scanner.nextInt();
 
             switch (selectNumb) {
+
                 //ДЗ 29 Задание 2 - Реализовать элементы меню по созданию и удалению таблицы со студентами.
                 //Студент имеет минимум 4 поля.
                 case 1:
@@ -46,11 +47,13 @@ public class Main {
                     addUserStudent();
                     System.out.println("Студент добавлен");
                     break;
+
                 //ДЗ 29 Задание 4 -Реализовать элемент меню по выводу всех студентов,
                 // отсортированных по имени от А до Я.
                 case 4:
                     showListStudents();
                     break;
+
                 //ДЗ 29 Задание 5 - Реализовать элемент меню по поиску студентов по тексту, введенному пользователем,
                 // и выводу найденных упорядоченными по имени от А до Я.
                 case 5:
@@ -97,7 +100,7 @@ public class Main {
     private void addUserStudent() {
         Scanner scanner = new Scanner(System.in);
 
-        int id = 1;
+        int id = 4;
         System.out.println("Введите имя студента: ");
         String name = scanner.nextLine();
         System.out.println("ведите фамилию студента: ");
@@ -135,7 +138,8 @@ public class Main {
         System.out.println(studentsList);
     }
 
-    //Case 5
+    //Case 5 поиск в среде программы после загрузки всей базы данных(альтернативный метод)
+    /*
     private void searchStudent() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Введите текст для поиска:");
@@ -158,6 +162,39 @@ public class Main {
                             cursor.getInt("age")
                     ));
                 }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        Collections.sort(resultSearch);
+        if (resultSearch.size() != 0) {
+            System.out.println(resultSearch);
+        }else {
+            System.out.println("Поиск не дал результутов, повторите попытку");
+        }
+    }
+     */
+
+    //Case 5
+    private void searchStudent() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Введите текст для поиска:");
+
+        String scannerText = scanner.next();
+
+
+        ArrayList <Student> resultSearch = new ArrayList<>();
+        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:sample.db")) {
+            Statement statement = connection.createStatement();
+            ResultSet cursor = statement.executeQuery(String.format("SELECT * FROM Students " +
+                            "WHERE name LIKE '%%%s%%' OR lastName LIKE '%%%s%%'", scannerText, scannerText));
+            while (cursor.next()) {
+                resultSearch.add(new Student(
+                        cursor.getInt("id"),
+                        cursor.getString("name"),
+                        cursor.getString("lastName"),
+                        cursor.getInt("age")
+                ));
             }
         } catch (SQLException e) {
             e.printStackTrace();
